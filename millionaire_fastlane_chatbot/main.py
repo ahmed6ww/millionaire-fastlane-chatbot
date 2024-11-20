@@ -8,7 +8,7 @@ from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
 load_dotenv()
-@st.cache_resource
+@st.cache_data
 def read_pdf_files(pdf_directory):
     pdf_loader = PyPDFDirectoryLoader(pdf_directory)
     documents = pdf_loader.load()
@@ -16,7 +16,7 @@ def read_pdf_files(pdf_directory):
     
 doc = read_pdf_files("document/")
 len(doc)
-@st.cache_resource
+@st.cache_data
 def chunk_data(docs,chunk_size=800, chunk_overlap=50):
    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
    docs = text_splitter.split_documents(docs)
