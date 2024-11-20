@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "millionaire-fastlane-chatbot"
+version = "0.1.0"
+description = ""
+authors = ["Ahmed <heydude08080@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "*"
+langchain-community = "*"
+streamlit = "*"
+unstructured = "*"
+tiktoken = "*"
+pinecone-client = "*"
+pypdf = "*"
+pandas = "*"
+numpy = "*"
+python-dotenv = "*"
+sentence-transformers = "^3.3.1"
+langchain-groq = "^0.2.1"
+
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
