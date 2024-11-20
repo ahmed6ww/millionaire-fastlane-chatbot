@@ -34,7 +34,7 @@ len(vectors)
 index_name = "millionairefastlanechatbot"
 from langchain.vectorstores import Pinecone
 index = Pinecone.from_documents( documents, embeddings,index_name=index_name)
-@st.cache_resource
+
 def retrieve_query(query,k=2):
     matching_results = index.similarity_search(query, k=k)
     return matching_results
