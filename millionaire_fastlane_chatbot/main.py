@@ -44,7 +44,7 @@ def initialize_llm():
     llm = ChatGroq(
         groq_api_key=groq_api_key,
         model_name="mixtral-8x7b-32768",
-        temperature=0.5,
+        temperature=0.7,
     )
     return llm
 
@@ -81,6 +81,7 @@ llm = initialize_llm()
 chain = initialize_qa_chain(llm)
 
 # Initialize chat history
+# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -99,10 +100,11 @@ if prompt := st.chat_input("What is up?"):
 
     # RAG response generation
     with st.chat_message("assistant"):
-        with st.spinner("Generating response..."):
-            response = chatbot(prompt, index, chain)
+            
+            response = chatbot(prompt,index,chain)
+           
             st.markdown(response)
-
+            
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
 
