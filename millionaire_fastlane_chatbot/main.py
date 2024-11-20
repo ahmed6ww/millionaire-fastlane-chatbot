@@ -33,8 +33,8 @@ def create_embeddings(_model_name="all-MiniLM-L6-v2"):
 
 # Function to create vector store
 @st.cache_resource
-def create_vector_store(documents, _embeddings, index_name="millionairefastlanechatbot"):
-    index = Pinecone.from_documents(documents, _embeddings, index_name=index_name)
+def create_vector_store(_documents, _embeddings, index_name="millionairefastlanechatbot"):
+    index = Pinecone.from_documents(_documents, _embeddings, index_name=index_name)
     return index
 
 # Function to initialize LLM
