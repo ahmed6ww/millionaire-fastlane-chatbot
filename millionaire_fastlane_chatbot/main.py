@@ -1,71 +1,84 @@
-import langchain
-import pinecone
+import os
+import streamlit as st
+from dotenv import load_dotenv
 from langchain.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import SentenceTransformerEmbeddings
 from langchain.vectorstores import Pinecone
+from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
-import os
-from dotenv import load_dotenv
+
+# Load environment variables
 load_dotenv()
+
+# Function to load PDF files
 @st.cache_data
 def read_pdf_files(pdf_directory):
     pdf_loader = PyPDFDirectoryLoader(pdf_directory)
     documents = pdf_loader.load()
     return documents
-    
-doc = read_pdf_files("document/")
-len(doc)
+
+# Function to split documents into chunks
 @st.cache_data
-def chunk_data(docs,chunk_size=800, chunk_overlap=50):
-   text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-   docs = text_splitter.split_documents(docs)
-   return docs
+def chunk_data(docs, chunk_size=800, chunk_overlap=50):
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    docs = text_splitter.split_documents(docs)
+    return docs
 
-documents = chunk_data(docs=doc)
-len(documents)
+# Function to create embeddings
+@st.cache_resource
+def create_embeddings(_model_name="all-MiniLM-L6-v2"):
+    embeddings = SentenceTransformerEmbeddings(model_name=_model_name)
+    return embeddings
 
-embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+# Function to create vector store
+@st.cache_resource
+def create_vector_store(documents, _embeddings, index_name="millionairefastlanechatbot"):
+    index = Pinecone.from_documents(documents, _embeddings, index_name=index_name)
+    return index
 
-vectors = embeddings.embed_query("how ")
-len(vectors)
+# Function to initialize LLM
+@st.cache_resource
+def initialize_llm():
+    groq_api_key = os.environ['GROQ_API_KEY']
+    llm = ChatGroq(
+        groq_api_key=groq_api_key,
+        model_name="llama3-groq-70b-8192-tool-use-preview",
+        temperature=0.5,
+    )
+    return llm
 
-
-index_name = "millionairefastlanechatbot"
-from langchain.vectorstores import Pinecone
-index = Pinecone.from_documents( documents, embeddings,index_name=index_name)
-
-def retrieve_query(query,k=2):
+# Function to retrieve query
+def retrieve_query(query, index, k=2):
     matching_results = index.similarity_search(query, k=k)
     return matching_results
 
-from langchain.chains.question_answering import load_qa_chain
-from langchain_groq import ChatGroq
+# Function to initialize QA chain
+@st.cache_resource
+def initialize_qa_chain(_llm):
+    chain = load_qa_chain(_llm, chain_type="stuff")
+    return chain
 
-
-groq_api_key = os.environ['GROQ_API_KEY']
-llm = ChatGroq(
-            groq_api_key=groq_api_key,
-            model_name="llama3-groq-70b-8192-tool-use-preview",
-            temperature=0.5,
-    )
-chain = load_qa_chain(llm,chain_type="stuff")
-
-def chatbot(query):
-    matching_results = retrieve_query(query)
-    print(matching_results)
-    response = chain.run(input_documents=matching_results,question=query)
+# Function to handle chatbot queries
+def chatbot(query, index, chain):
+    matching_results = retrieve_query(query, index)
+    response = chain.run(input_documents=matching_results, question=query)
     return response
-query = "what is fastlane roadmap.and what is the difference between fastlane roadmap and slowlane roadmap. Give strategies for fastlane roadmap.Give any story from the book"
-answer = chatbot(query)
-print(answer)
 
-
-
-import streamlit as st
-from streamlit import chat_message, chat_input, title, markdown, spinner
 # Streamlit App
-st.title("Simple RAG-Integrated Chat")
+st.title("Chat with the book 'The Millionaire Fastlane'")
+st.write("This is a Retrieval-Augmented Generation (RAG) app. You can ask anything about the book 'The Millionaire Fastlane'. The app will provide responses based on the contents of the book.")
+
+# Load and process documents
+documents = chunk_data(read_pdf_files("document/"))
+
+# Create embeddings and vector store
+embeddings = create_embeddings()
+index = create_vector_store(documents, embeddings)
+
+# Initialize LLM and QA chain
+llm = initialize_llm()
+chain = initialize_qa_chain(llm)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -87,8 +100,11 @@ if prompt := st.chat_input("What is up?"):
     # RAG response generation
     with st.chat_message("assistant"):
         with st.spinner("Generating response..."):
-            response = chatbot(prompt)
+            response = chatbot(prompt, index, chain)
             st.markdown(response)
 
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+
+
