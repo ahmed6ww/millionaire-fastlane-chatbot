@@ -20,9 +20,9 @@ def read_pdf_files(pdf_directory):
 
 # Function to split documents into chunks
 @st.cache_data
-def chunk_data(docs, chunk_size=800, chunk_overlap=50):
+def chunk_data(_docs, chunk_size=800, chunk_overlap=50):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    docs = text_splitter.split_documents(docs)
+    docs = text_splitter.split_documents(_docs)
     return docs
 
 # Function to create embeddings
