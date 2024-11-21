@@ -1,16 +1,19 @@
 import os
 import streamlit as st
 from dotenv import load_dotenv
-from langchain.document_loaders import PyPDFDirectoryLoader
+from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import SentenceTransformerEmbeddings
-from langchain.vectorstores import Pinecone
+from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_community.vectorstores import Pinecone
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
 
 # Load environment variables
 load_dotenv()
-
+# Pinecone.init(
+#     api_key=os.getenv("PINECONE_API_KEY"),
+#     environment=os.getenv("PINECONE_ENVIRONMENT"),
+# )
 # key = os.getenv("PINECONE_API_KEY")
 # pc = Pinecone(api_key=key)
 # # Create a serverless index
@@ -46,7 +49,7 @@ def create_embeddings(_model_name="all-mpnet-base-v2"):
     return embeddings
 
 # Function to create vector store
-@st.cache_resource
+
 def create_vector_store(_documents, _embeddings, index_name="millionairefastlanechatbot"):
     index = Pinecone.from_documents(_documents, _embeddings, index_name=index_name)
     return index
