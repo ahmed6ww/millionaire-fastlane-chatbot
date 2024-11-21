@@ -10,7 +10,6 @@ from langchain_groq import ChatGroq
 
 # Load environment variables
 load_dotenv()
-from pinecone import Pinecone, ServerlessSpec
 
 # key = os.getenv("PINECONE_API_KEY")
 # pc = Pinecone(api_key=key)
