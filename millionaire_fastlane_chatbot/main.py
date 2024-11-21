@@ -41,8 +41,8 @@ def chunk_data(_docs, chunk_size=1000, chunk_overlap=130):
 
 # Function to create embeddings
 @st.cache_resource
-def create_embeddings(model_name="all-mpnet-base-v2"):
-    embeddings = SentenceTransformerEmbeddings(model_name=model_name)
+def create_embeddings(_model_name="all-mpnet-base-v2"):
+    embeddings = SentenceTransformerEmbeddings(model_name=_model_name)
     return embeddings
 
 # Function to create vector store
@@ -63,7 +63,7 @@ def initialize_llm():
     return llm
 
 # Function to retrieve query
-def retrieve_query(query, index,k=10):
+def retrieve_query(query, index,k=5):
     matching_results = index.similarity_search(query, k=k)
     return matching_results
 
