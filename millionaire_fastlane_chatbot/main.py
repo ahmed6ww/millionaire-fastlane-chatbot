@@ -27,7 +27,7 @@ def chunk_data(_docs, chunk_size=800, chunk_overlap=50):
 
 # Function to create embeddings
 @st.cache_resource
-def create_embeddings(_model_name="all-MiniLM-L6-v2"):
+def create_embeddings(_model_name="all-mpnet-base-v2"):
     embeddings = SentenceTransformerEmbeddings(model_name=_model_name)
     return embeddings
 
