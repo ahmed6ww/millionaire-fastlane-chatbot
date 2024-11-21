@@ -10,7 +10,22 @@ from langchain_groq import ChatGroq
 
 # Load environment variables
 load_dotenv()
+from pinecone import Pinecone, ServerlessSpec
 
+# key = os.getenv("PINECONE_API_KEY")
+# pc = Pinecone(api_key=key)
+# # Create a serverless index
+# index_name = "millionairefastlanechatbot"
+
+# pc.create_index(
+#     name=index_name,
+#     dimension=768, # Replace with your model dimensions
+#     metric="cosine", # Replace with your model metric
+#     spec=ServerlessSpec(
+#         cloud="aws",
+#         region="us-east-1"
+#     ) 
+# )
 # Function to load PDF files
 @st.cache_data
 def read_pdf_files(pdf_directory):
