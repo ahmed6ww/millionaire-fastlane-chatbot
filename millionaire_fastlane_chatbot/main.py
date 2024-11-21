@@ -63,7 +63,7 @@ def initialize_llm():
     return llm
 
 # Function to retrieve query
-def retrieve_query(query, index,k=5):
+def retrieve_query(query, index,k=2):
     matching_results = index.similarity_search(query, k=k)
     return matching_results
 
