@@ -8,8 +8,10 @@ from langchain_community.vectorstores import Pinecone
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
 
+from millionaire_fastlane_chatbot.utils import read_pdf_files, chunk_data, create_embeddings, create_vector_store, initialize_llm, initialize_qa_chain, chatbot
+
 # Load environment variables
-load_dotenv()
+
 # Pinecone.init(
 #     api_key=os.getenv("PINECONE_API_KEY"),
 #     environment=os.getenv("PINECONE_ENVIRONMENT"),
@@ -29,58 +31,7 @@ load_dotenv()
 #     ) 
 # )
 # Function to load PDF files
-@st.cache_data
-def read_pdf_files(pdf_directory):
-    pdf_loader = PyPDFDirectoryLoader(pdf_directory)
-    documents = pdf_loader.load()
-    return documents
 
-# Function to split documents into chunks
-@st.cache_data
-def chunk_data(_docs, chunk_size=1000, chunk_overlap=130):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    docs = text_splitter.split_documents(_docs)
-    return docs
-
-# Function to create embeddings
-@st.cache_resource
-def create_embeddings(_model_name="all-mpnet-base-v2"):
-    embeddings = SentenceTransformerEmbeddings(model_name=_model_name)
-    return embeddings
-
-# Function to create vector store
-@st.cache_resource
-def create_vector_store(_documents, _embeddings, index_name="millionairefastlanechatbot"):
-    index = Pinecone.from_documents(_documents, _embeddings, index_name=index_name)
-    return index
-
-# Function to initialize LLM
-@st.cache_resource
-def initialize_llm():
-    groq_api_key = os.environ['GROQ_API_KEY']
-    llm = ChatGroq(
-        groq_api_key=groq_api_key,
-        model_name="llama-3.1-70b-versatile",
-        temperature=0.7,
-    )
-    return llm
-
-# Function to retrieve query
-def retrieve_query(query, index,k=2):
-    matching_results = index.similarity_search(query, k=k)
-    return matching_results
-
-# Function to initialize QA chain
-@st.cache_resource
-def initialize_qa_chain(_llm):
-    chain = load_qa_chain(_llm, chain_type="stuff")
-    return chain
-
-# Function to handle chatbot queries
-def chatbot(query, index, chain):
-    matching_results = retrieve_query(query, index)
-    response = chain.run(input_documents=matching_results, question=query)
-    return response
 
 # Streamlit App
 st.title("Chat with the book 'The Millionaire Fastlane'")
@@ -127,3 +78,8 @@ if prompt := st.chat_input("What is up?"):
 
 
 
+# query = "who is the author of the book"
+
+
+# answer = chatbot(query, index, chain)
+# print(answer)

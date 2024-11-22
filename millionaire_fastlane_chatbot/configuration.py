@@ -1,6 +1,6 @@
 from pinecone import Pinecone, ServerlessSpec
 import os
-
+from dotenv import load_dotenv
 key = os.getenv("PINECONE_API_KEY")
 pc = Pinecone(api_key=key)
 # Create a serverless index
@@ -15,3 +15,4 @@ pc.create_index(
         region="us-east-1"
     ) 
 )
+load_dotenv()
