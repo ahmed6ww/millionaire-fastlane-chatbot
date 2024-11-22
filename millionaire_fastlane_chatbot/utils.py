@@ -40,7 +40,7 @@ def initialize_llm():
     llm = ChatGroq(
         groq_api_key=groq_api_key,
         model_name="mixtral-8x7b-32768",
-        temperature=0.7,
+        temperature=0.4,
     )
     return llm
 
