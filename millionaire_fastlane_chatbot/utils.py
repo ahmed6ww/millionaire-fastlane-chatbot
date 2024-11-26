@@ -60,3 +60,6 @@ def chatbot(query, index, chain):
     matching_results = retrieve_query(query, index)
     response = chain.run(input_documents=matching_results, question=query)
     return response
+def get_index(name,embedding):
+    index = Pinecone.from_existing_index(index_name=name, embedding=embedding)
+    return index

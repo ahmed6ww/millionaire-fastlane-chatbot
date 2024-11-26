@@ -8,29 +8,7 @@ from langchain_community.vectorstores import Pinecone
 from langchain.chains.question_answering import load_qa_chain
 from langchain_groq import ChatGroq
 
-from millionaire_fastlane_chatbot.utils import read_pdf_files, chunk_data, create_embeddings, create_vector_store, initialize_llm, initialize_qa_chain, chatbot
-
-# Load environment variables
-
-# Pinecone.init(
-#     api_key=os.getenv("PINECONE_API_KEY"),
-#     environment=os.getenv("PINECONE_ENVIRONMENT"),
-# )
-# key = os.getenv("PINECONE_API_KEY")
-# pc = Pinecone(api_key=key)
-# # Create a serverless index
-# index_name = "millionairefastlanechatbot"
-
-# pc.create_index(
-#     name=index_name,
-#     dimension=768, # Replace with your model dimensions
-#     metric="cosine", # Replace with your model metric
-#     spec=ServerlessSpec(
-#         cloud="aws",
-#         region="us-east-1"
-#     ) 
-# )
-# Function to load PDF files
+from millionaire_fastlane_chatbot.utils import read_pdf_files, chunk_data, create_embeddings, create_vector_store, initialize_llm, initialize_qa_chain, chatbot, get_index
 
 
 # Streamlit App
@@ -42,7 +20,7 @@ documents = chunk_data(read_pdf_files("document/"))
 
 # Create embeddings and vector store
 embeddings = create_embeddings()
-index = create_vector_store(documents, embeddings)
+index = get_index("millionairefastlanechatbot", embeddings)
 
 # Initialize LLM and QA chain
 llm = initialize_llm()
@@ -76,10 +54,3 @@ if prompt := st.chat_input("What is up?"):
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
 
-
-
-# query = "who is the author of the book"
-
-
-# answer = chatbot(query, index, chain)
-# print(answer)
